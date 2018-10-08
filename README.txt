@@ -1,7 +1,1 @@
-1924124603@qq.com
-
-zhulihulian123
-
-appid:wxa077f149129f3f96
-
-secret:8793225af5aa7e607c35519424ba20ba
+下载demo 直接打开点击下面按钮，生成图片，长按保存
