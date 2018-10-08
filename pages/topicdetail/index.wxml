@@ -1,0 +1,184 @@
+<nav-bar navbar-data='{{nvabarData}}'></nav-bar>
+
+<import src="/wxParse/wxParse.wxml"/>
+<view class='topic-detail-page' style='margin-top: {{height - iosHeight}}px;display: {{(showModal || openSet) ? "none" : "block"}};'>
+  <view class='topic-autho-info' wx:if='{{!myPost}}'>
+    <view class='topic-autho-name'  bindtap='linCommentkUser' data-id='{{detail.member.member_id}}'>
+      <view><image src="{{detail.member.avatar}}" class='topic-autho-avatar' mode='aspectFill'></image></view>
+      <view class='user-pickname'>{{detail.member.name}}</view>
+    </view>
+    <!-- <view class='attention-autho' wx:if='{{!detail.userFocus}}' bindtap='focusUser' data-id='{{detail.member.member_id}}'><text style='margin-right: 4rpx;'>+</text> 关注</view>
+    <view class='attention-autho attentioned-autho' wx:if='{{detail.userFocus}}' bindtap='cancleFocus' data-id='{{detail.member.member_id}}'>
+      <image src='/imgs/active.png' mode='aspectFill'></image>
+      <text>关注</text>
+    </view> -->
+  </view>
+  <view class='topic-main-content'>
+    <view class='topic-title'>{{detail.post_title}}</view>
+    <view class='topic-created-time'>{{detail.created_at}}</view>
+    <view class='topic-text'>
+      <template is="wxParse" data="{{wxParseData: content.nodes}}"/>
+    </view>
+    <view class='cars-swiper' wx:if='{{detail.garageImage.length > 0}}' >
+        <view class='class-swiper-num'>
+          <view>{{current + 1}}
+            <text style='color: #cecece;'>\ {{detail.garageImage.length}}</text>
+          </view>
+        </view>
+        <view class='swiper-wrap'>
+          <swiper next-margin='40rpx' autoplay='true' class='cars-swiper' circular='true' bindchange='getCurrent'>
+            <block wx:for="{{detail.garageImage}}" wx:key='this' >
+              <swiper-item>
+                <view>
+                  <image src="{{item.material_url}}" mode='aspectFill' class='cars-swiper-img' bindtap='previewImg' data-url='{{item.material_url}}'></image>
+                </view>
+              </swiper-item>
+            </block>
+          </swiper>
+        </view>
+
+      </view>
+
+    <view class='topic-id'>编号：{{detail.post_number}}</view>
+
+    <view class='some-shares-buttons'>
+      <!-- <view class='some-shares-btn'>
+        <button class='share-btn' bindtap='shareFrends'><image src='/imgs/topic-share-friends.png' mode='aspectFill'></image><text>朋友圈</text></button>
+        <button class='share-btn share-wx' open-type='share'><image src='/imgs/topic-share-wx.png' mode='aspectFill'></image><text>微信</text></button>
+      </view> -->
+      <view class='topic-collection' bindtap='{{detail.userCollect ? "cancleCollect" : "collectPost"}}' wx:if='{{!myPost}}'>
+        <view><image src='/imgs/topic-{{detail.userCollect ? "" : "no-"}}collection.png' mode='aspectFill'></image></view>
+        <view>收藏</view>
+      </view>
+    </view>
+  </view>
+
+
+  <view class='comment-list'>
+    <view class='comment-title'>评论列表</view>
+    <block wx:for='{{comments}}' wx:key='this'>
+      <view class='comment-list-item'>
+        <view catchtap='linCommentkUser' data-id='{{item.member.member_id}}'><image src="{{item.member.avatar}}" class='looker-avatar' mode='aspectFill'></image></view>
+        <view class='comment-detail'>
+          <view class='commenter-info'>
+            <view class='commenter-name'>{{item.member.name}}</view>
+            <view class='support-num-detail'>
+              <view style='{{item.my_upvote_num > 0 ? "" : "color: #666666"}}'>{{item.upvote_num}}</view>
+              <view bindtap='suportComment' data-id='{{item.id}}' data-index='{{index}}'><image src="/imgs/{{item.my_upvote_num > 0 ? '' : 'no-'}}support.png" class='support-num' mode='aspectFill'></image></view>
+            </view>
+          </view>
+          <view class='send-time'>{{item.created_at}}</view>
+          <view class='comment-content' bindtap='reply' data-name='{{item.member.name}}' data-id='{{item.id}}' data-comment='1'>{{item.content}}</view>
+          <view style='background: #f9f9f9;margin-top: 20rpx;padding: 20rpx;' wx:if='{{item.comment_reply.length > 0}}'>
+            <view class='{{showAll ? "" : "reply-fold"}}'>
+              <block wx:for='{{item.comment_reply}}' wx:for-item='reply' wx:key='this' wx:for-index='replyIndex'>
+                <view class='comment-reply-reply'>
+                  <view style='margin-right: 40rpx;position: relative;'>
+                    <text style='color: #5783c1;' catchtap='linCommentkUser' data-id='{{reply.from_member_id}}'>{{reply.from_member_name}}: </text>
+                    <text style='color: #666666;' bindtap='replyReply' data-name='{{reply.from_member_name}}' data-member='{{reply.id}}' data-comment='2'>{{reply.content}}</text>
+                  </view>
+                  <view wx:if='{{showAll && item.comment_reply_count > 3}}'>
+                    <block wx:for='{{reply.reply}}' wx:for-item='replys' wx:key='this' wx:for-index='replysIndex'>
+                      <view class='comment-reply-reply' style='padding: 0;'>
+                        <view>
+                          <text style='color: #5783c1;' catchtap='linCommentkUser' data-id='{{replys.from_member_id}}'>{{replys.from_member_name}}: </text>
+                          <text style='color: #bbbbbb;'>回复 </text>
+                          <text style='color: #5783c1;' catchtap='linCommentkUser' data-id='{{replys.to_member_id}}'>{{replys.to_member_name}}: </text>
+                          <text style='color: #666666;' bindtap='replyReply' data-name='{{replys.from_member_name}}' data-member='{{replys.id}}' data-comment='2'>{{replys.content}}</text>
+                        </view>
+                      </view>
+                    </block>
+                  </view>
+                </view>
+              </block>
+            </view>
+            <view class='show-all' wx:if='{{item.comment_reply_count > 3}}' catchtap='showAll'>{{showAll ? "收起" : "展开全部 " +item.comment_reply_count +  " 条回复"}}<image src='/imgs/next-comment.png' wx:if='{{!showAll}}'></image></view>
+          </view>
+          <!-- <view class='deleted-comment' wx:if='{{myPost}}'>
+            <image src='/imgs/draft-trash.png'></image>
+          </view> -->
+        </view>
+      </view>
+    </block>
+
+    <view class='look-next-comment'>
+      
+    </view>
+  </view>
+
+  <!-- 商务合作  -->
+  <view class='business-partnership' bindtap='partnership'>
+    商务合作
+  </view>
+  <!-- 回复  -->
+</view>  
+<view class='bottom-share-modal' bindtap='hideShareModal' wx:if='{{showShareModal}}'>
+  <view class='share-detail'>
+    <view class='share-tips'>分享到：</view>
+    <view class='share-items'>
+      <view catchtap='shareFrends'>
+        <view><image src='/imgs/topic-share-friends2.png' mode='aspectFill'></image></view>
+        <view class='share-text'>朋友圈</view>
+      </view>
+      <view>
+        <view><button open-type='share'><image src='/imgs/topic-share-wx2.png' class='wx-image' mode='aspectFill'></image></button></view>
+        <view class='share-text' style='margin-top: 20rpx;'>微信</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 分享到朋友圈 -->
+
+<view class='share-modal-bg' wx:if='{{showModal}}' bindtap='hideModal'>
+  <view class='canvas-wrap' catchlongpress='saveImg' catchtap='0'>
+    <view><image src='{{shareImg}}' class='share-img'></image></view>
+    <view class='share-img-tips'>长按图片保存至相册，快去分享吧！</view>
+  </view>
+</view>
+
+
+
+<canvas style="width: 286px;height: 415px;background:red;position: fixed;top: -10000px;" canvas-id="shareFrends"></canvas>
+
+
+
+
+<view class='reply-input' wx:if="{{replyInput  && !showModal}}">
+  <view class='input-text'><text class='reply-to-name'>@{{replayName}}: </text><input type='text' value='{{replyText}}' bindinput='getReply' auto-focus='true'></input></view>
+  <view class='opreat-btn'>
+    <view bindtap='cancleInput'>取消</view>
+    <view bindtap='submitReply'>发表</view>
+  </view>
+</view>
+
+
+<view class='open-seting-bg' wx:if='{{openSet}}' catchtap='cancleSet'>
+  <view class='open-set-inner'>
+    <view class='set-title'>是否打开授权设置？</view>
+    <view class='btn-openset'>
+      <view catchtap='cancleSet'>取消</view>
+      <view><button open-type='openSetting' class='button-style' catchtap='cancleSet'>确定</button></view>
+    </view>
+  </view>
+  
+</view>
+
+
+<view class='comment-reply' wx:if="{{!replyInput && !showModal}}">
+  <view class='bottom-items'>
+    <view class='comment-input'><input type='text' value='{{commentText}}' name='comment' placeholder='我来说两句' bindconfirm='submitComment' placeholder-class='color: #bbbbbb;'></input></view>
+    <view class='bottom-item-detail' bindtap='{{detail.userUpvote ? "unUpovte" : "upvote"}}'>
+      <image src="/imgs/bottom-{{detail.userUpvote ? '' : 'no-'}}support.png" class='bottom-support' mode='aspectFill'></image>
+      <text class='bottom-item-num'>{{detail.upvote_num > 99999 ? '10万+' : detail.upvote_num}}</text>
+    </view>
+    <view class='bottom-item-detail'>
+      <image src="/imgs/bottom-message.png" class='bottom-support' mode='aspectFill' style='margin-top: 10rpx;'></image>
+      <text class='bottom-item-num'>{{detail.comment_num > 99999 ? '10万+' : detail.comment_num}}</text>
+    </view>
+    <view bindtap='showShareModal'>
+      <image src="/imgs/bottom-share.png" class='bottom-support' mode='aspectFill'></image>
+    </view>
+  </view>
+</view>
+<canvas canvas-id='cropperCocer' style='width: 250px;height: 200px;position: absolute; top: 200rpx;position: fixed;top: -10000px;'></canvas>

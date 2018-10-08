@@ -1,0 +1,20 @@
+/* pages/login/login.wxss */
+
+.login-autho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-autho image{
+  width: 160rpx;
+  height: 160rpx;
+  margin: 300rpx 500rpx;
+  padding: 10rpx;
+}
+
+.login-autho button {
+  width: 670rpx;
+  background: #000000; 
+  color: #fff;
+}

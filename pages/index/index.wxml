@@ -1,0 +1,81 @@
+
+
+<import src="/wxParse/wxParse.wxml"/>
+<view class='topic-detail-page'>
+  <view class='topic-autho-info' wx:if='{{!myPost}}'>
+    <view class='topic-autho-name'  bindtap='linCommentkUser' data-id='{{detail.member.member_id}}'>
+      <view><image src="{{detail.member.avatar}}" class='topic-autho-avatar' mode='aspectFill'></image></view>
+      <view class='user-pickname'>{{detail.member.name}}</view>
+    </view>
+  </view>
+  <view class='topic-main-content'>
+    <view class='topic-title'>{{detail.post_title}}</view>
+    <view class='topic-created-time'>{{detail.created_at}}</view>
+    <view class='topic-text'>
+      <template is="wxParse" data="{{wxParseData: content.nodes}}"/>
+    </view>
+    <view class='cars-swiper' wx:if='{{detail.garageImage.length > 0}}' >
+        <view class='class-swiper-num'>
+          <view>{{current + 1}}
+            <text style='color: #cecece;'>\ {{detail.garageImage.length}}</text>
+          </view>
+        </view>
+        <view class='swiper-wrap'>
+          <swiper next-margin='40rpx' autoplay='true' class='cars-swiper' circular='true' bindchange='getCurrent'>
+            <block wx:for="{{detail.garageImage}}" wx:key='this' >
+              <swiper-item>
+                <view>
+                  <image src="{{item.material_url}}" mode='aspectFill' class='cars-swiper-img' bindtap='previewImg' data-url='{{item.material_url}}'></image>
+                </view>
+              </swiper-item>
+            </block>
+          </swiper>
+        </view>
+      </view>
+  </view>
+</view>  
+<!--  -->
+<view class='bottom-share-modal' bindtap='hideShareModal' wx:if='{{showShareModal}}'>
+  <view class='share-detail'>
+    <view class='share-tips'>分享到：</view>
+    <view class='share-items'>
+      <view catchtap='shareFrends'>
+        <view><image src='/imgs/topic-share-friends2.png' mode='aspectFill'></image></view>
+        <view class='share-text'>朋友圈</view>
+      </view>
+      <view>
+        <view><button open-type='share' catchtap='1' ><image src='/imgs/topic-share-wx2.png' class='wx-image' mode='aspectFill'></image></button></view>
+        <view class='share-text' style='margin-top: 20rpx;'>微信</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 分享到朋友圈 -->
+
+<view class='share-modal-bg' wx:if='{{showModal}}' bindtap='hideModal'>
+  <view class='canvas-wrap' catchlongpress='saveImg' catchtap='0'>
+    <view><image src='{{shareImg}}' class='share-img'></image></view>
+    <view class='share-img-tips'>长按图片保存至相册，快去分享吧！</view>
+  </view>
+</view>
+
+
+
+<canvas style="width: 286px;height: 415px;background:red;position: fixed;top: -10000px;" canvas-id="shareFrends"></canvas>
+
+
+
+<view class='open-seting-bg' wx:if='{{openSet}}' catchtap='cancleSet'>
+  <view class='open-set-inner'>
+    <view class='set-title'>是否打开授权设置？</view>
+    <view class='btn-openset'>
+      <view catchtap='cancleSet'>取消</view>
+      <view><button open-type='openSetting' class='button-style' catchtap='cancleSet'>确定</button></view>
+    </view>
+  </view>
+  
+</view>
+
+<canvas canvas-id='cropperCocer' style='width: 250px;height: 200px;position: absolute; top: 200rpx;position: fixed;top: -10000px;'></canvas>
+

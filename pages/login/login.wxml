@@ -1,0 +1,9 @@
+
+
+<view class='login-autho'>
+  <view><image src='/imgs/logo.png' mode='aspectFill'></image></view>
+  <button open-type='getUserInfo'  bindgetuserinfo='getUserInfo'>立即登录</button>
+</view>
+
+
+
